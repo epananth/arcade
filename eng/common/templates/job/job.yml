@@ -160,6 +160,11 @@ jobs:
           SourceFolder: 'artifacts/packages'
           Contents: '**'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/packages'
+      - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+        displayName: 'Generation Task'
+        inputs:
+          BuildDropPath: '$(Build.ArtifactStagingDirectory)/artifacts/packages'
+          Verbosity: 'Verbose'
       - task: PublishBuildArtifacts@1
         displayName: Publish pipeline artifacts
         inputs:
