@@ -164,7 +164,7 @@ jobs:
         displayName: 'Generation Task'
         inputs:
           BuildDropPath: '$(Build.ArtifactStagingDirectory)/artifacts/packages'
-          ManifestDirPath: '$(Build.ArtifactStagingDirectory)/artifacts/test-manifest'
+          ManifestDirPath: '$(Build.ArtifactStagingDirectory)/artifacts'
           Verbosity: 'Debug'
       - task: PublishBuildArtifacts@1
         displayName: Publish pipeline artifacts
