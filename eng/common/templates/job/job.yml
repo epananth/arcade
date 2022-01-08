@@ -122,12 +122,12 @@ jobs:
         displayName: Enable authentication against 1ekpkgs
         inputs:
           filePath: eng\common\enable-cross-org-manifest-generation.ps1
-          arguments: -token $(dn-bot-dnceng-artifact-feeds-rw)
+          arguments: -token $(package-read-access)
 
       - task: DownloadPackage@1
         inputs:
           packageType: nuget
-          feed: https://1essharedassets.pkgs.visualstudio.com/_packaging/Packaging%40Release/nuget/v3/index.json
+          feed: https://pkgs.dev.azure.com/1essharedassets/_packaging/packaging/nuget/v3/index.json
           definition: Microsoft.ManifestTool.CrossPlatform
           version: 2.0.6
           downloadPath: $(Build.ArtifactStagingDirectory)/downloads/
