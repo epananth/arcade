@@ -114,6 +114,24 @@ jobs:
         continueOnError: ${{ parameters.continueOnError }}
         condition: and(succeeded(), in(variables['_SignType'], 'real', 'test'), eq(variables['Agent.Os'], 'Windows_NT'))
 
+  # authenticate here and download the package 
+      - task: NuGetAuthenticate@0
+        displayName: 'Authenticate to AzDO Feeds'
+
+      - task: PowerShell@2
+        displayName: Enable authentication against 1ekpkgs
+        inputs:
+          filePath: eng\common\enable-cross-org-manifest-generation.ps1
+          arguments: -token $(dn-bot-dnceng-artifact-feeds-rw)
+
+      - task: DownloadPackage@1
+        inputs:
+          packageType: nuget
+          feed: https://1essharedassets.pkgs.visualstudio.com/_packaging/Packaging%40Release/nuget/v3/index.json
+          definition: Microsoft.ManifestTool.CrossPlatform
+          version: 2.0.6
+          downloadPath: $(Build.ArtifactStagingDirectory)/downloads/
+
   - ${{ if and(eq(parameters.runAsPublic, 'false'), eq(variables['System.TeamProject'], 'internal')) }}:
     - task: NuGetAuthenticate@0
 
@@ -164,7 +182,7 @@ jobs:
         displayName: 'Generation Task'
         inputs:
           BuildDropPath: '$(Build.ArtifactStagingDirectory)/artifacts/packages'
-          ManifestDirPath: '$(Build.ArtifactStagingDirectory)/artifacts'
+          ManifestDirPath: '$(Build.ArtifactStagingDirectory)/artifacts/packages/_manifest'
           Verbosity: 'Debug'
       - task: PublishBuildArtifacts@1
         displayName: Publish pipeline artifacts
