@@ -23,10 +23,10 @@ steps:
     # In addition, add an msbuild argument to copy the WIP from the repo to the target build location.
     # This is because SetupNuGetSources.sh will alter the current NuGet.config file, and we need to preserve those
     # changes.
-    $(Build.SourcesDirectory)/eng/common/enable-cross-org-publishing.ps1 -token $(dn-bot-dnceng-artifact-feeds-rw)
     $internalRestoreArgs=
     if [ '$(dn-bot-dnceng-artifact-feeds-rw)' != '$''(dn-bot-dnceng-artifact-feeds-rw)' ]; then
       # Temporarily work around https://github.com/dotnet/arcade/issues/7709
+      chmod +x $(Build.SourcesDirectory)/eng/common/enable-cross-org-publishing.ps1 -token $(dn-bot-dnceng-artifact-feeds-rw)
       chmod +x $(Build.SourcesDirectory)/eng/common/SetupNugetSources.sh
       $(Build.SourcesDirectory)/eng/common/SetupNugetSources.sh $(Build.SourcesDirectory)/NuGet.config $(dn-bot-dnceng-artifact-feeds-rw)
       internalRestoreArgs='/p:CopyWipIntoInnerSourceBuildRepo=true'

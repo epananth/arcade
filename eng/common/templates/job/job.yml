@@ -128,7 +128,7 @@ jobs:
       - task: DownloadPackage@1
         inputs:
           packageType: nuget
-          feed: https://pkgs.dev.azure.com/1essharedassets/_packaging/packaging/nuget/v3/index.json
+          feed: Packaging
           definition: Microsoft.ManifestTool.CrossPlatform
           version: 2.0.6
           downloadPath: $(Build.ArtifactStagingDirectory)/downloads/
