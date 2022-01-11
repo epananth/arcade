@@ -62,6 +62,7 @@ jobs:
     timeoutInMinutes: ${{ parameters.timeoutInMinutes }}
 
   variables:
+  - group: AzureDevOps-Artifact-Feeds-Pats
   - ${{ if ne(parameters.enableTelemetry, 'false') }}:
     - name: DOTNET_CLI_TELEMETRY_PROFILE
       value: '$(Build.Repository.Uri)'
