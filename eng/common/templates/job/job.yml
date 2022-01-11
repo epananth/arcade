@@ -118,12 +118,6 @@ jobs:
       - task: NuGetAuthenticate@0
         displayName: 'Authenticate to AzDO Feeds'
 
-      - task: PowerShell@2
-        displayName: Enable authentication against 1ekpkgs
-        inputs:
-          filePath: eng\common\enable-cross-org-manifest-generation.ps1
-          arguments: -token $(dn-bot-all-orgs-artifact-feeds-rw)
-
       - task: DownloadPackage@1
         inputs:
           packageType: nuget
