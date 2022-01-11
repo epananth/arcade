@@ -17,12 +17,13 @@ steps:
 - script: |
     set -x
     df -h
-
+  
     # If building on the internal project, the artifact feeds variable may be available (usually only if needed)
     # In that case, call the feed setup script to add internal feeds corresponding to public ones.
     # In addition, add an msbuild argument to copy the WIP from the repo to the target build location.
     # This is because SetupNuGetSources.sh will alter the current NuGet.config file, and we need to preserve those
     # changes.
+    $(Build.SourcesDirectory)/eng/common/enable-cross-org-publishing.ps1 -token $(dn-bot-dnceng-artifact-feeds-rw)
     $internalRestoreArgs=
     if [ '$(dn-bot-dnceng-artifact-feeds-rw)' != '$''(dn-bot-dnceng-artifact-feeds-rw)' ]; then
       # Temporarily work around https://github.com/dotnet/arcade/issues/7709
