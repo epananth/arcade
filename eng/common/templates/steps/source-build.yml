@@ -26,7 +26,6 @@ steps:
     $internalRestoreArgs=
     if [ '$(dn-bot-dnceng-artifact-feeds-rw)' != '$''(dn-bot-dnceng-artifact-feeds-rw)' ]; then
       # Temporarily work around https://github.com/dotnet/arcade/issues/7709
-      chmod +x $(Build.SourcesDirectory)/eng/common/enable-cross-org-publishing.ps1 -token $(dn-bot-dnceng-artifact-feeds-rw)
       chmod +x $(Build.SourcesDirectory)/eng/common/SetupNugetSources.sh
       $(Build.SourcesDirectory)/eng/common/SetupNugetSources.sh $(Build.SourcesDirectory)/NuGet.config $(dn-bot-dnceng-artifact-feeds-rw)
       internalRestoreArgs='/p:CopyWipIntoInnerSourceBuildRepo=true'
