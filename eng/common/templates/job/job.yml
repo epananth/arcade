@@ -122,7 +122,7 @@ jobs:
       - task: DownloadPackage@1
         inputs:
           packageType: nuget
-          feed: dotnet-espkgs
+          feed: internal/dotnet-espkgs
           definition: Microsoft.ManifestTool.CrossPlatform
           version: 2.0.6
           extract: true
