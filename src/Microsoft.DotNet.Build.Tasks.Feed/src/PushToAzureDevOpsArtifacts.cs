@@ -195,8 +195,17 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 RedirectStandardOutput = true,
                                 RedirectStandardError = true
                             };
+                            var process = Process.Start(processStartInfo);
+                            process.WaitForExit();
+
+                            if (process.ExitCode != 0)
+                            {
+                                Log.LogError($"Failed to execute the project");
+                            }
+                            Log.LogMessage("Ran the project without any errors");
+                            Log.LogMessage(MessageImportance.High,
+                                $"##vso[artifact.upload containerfolder=sbom-blob;artifactname=sbom-blob]{SbomGeneration}");
                         }
-                        
 
                         packageArtifacts = packageItems.Select(packageArtifactModelFactory.CreatePackageArtifactModel);
                         blobArtifacts = blobItems.Select(i => blobArtifactModelFactory.CreateBlobArtifactModel(i)).Where(blob => blob != null);
