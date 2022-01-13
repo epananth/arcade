@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -56,6 +57,8 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
         public bool IsStableBuild { get; set; }
 
         public bool IsReleaseOnlyPackageVersion { get; set; }
+
+        public string SbomDownloadPath {get; set;}
 
         /// <summary>
         /// Which version should the build manifest be tagged with.
@@ -174,6 +177,23 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                             Log.LogMessage(MessageImportance.High,
                                 $"##vso[artifact.upload containerfolder=BlobArtifacts;artifactname=BlobArtifacts]{blobItem.ItemSpec}");
                         }
+
+                        if (Directory.Exists(SbomDownloadPath))
+                        {
+                            Log.LogMessage($"{SbomDownloadPath} exists");
+                            Log.LogMessage($"Running the process");
+                            string arguments = $"generate -b {blobItems} -pn blobArtifacts -V Debug";
+                            var processStartInfo = new ProcessStartInfo()
+                            {
+                                FileName = "cmd.exe",
+                                UseShellExecute = false,
+                                Arguments = $"{"Microsoft.ManifestTool.exe"} {arguments}",
+                                WorkingDirectory = SbomDownloadPath,
+                                RedirectStandardOutput = true,
+                                RedirectStandardError = true
+                            };
+                        }
+                        
 
                         packageArtifacts = packageItems.Select(packageArtifactModelFactory.CreatePackageArtifactModel);
                         blobArtifacts = blobItems.Select(i => blobArtifactModelFactory.CreateBlobArtifactModel(i)).Where(blob => blob != null);

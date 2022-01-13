@@ -126,7 +126,15 @@ jobs:
           definition: Microsoft.ManifestTool.CrossPlatform
           version: 2.0.6
           extract: true
-          downloadPath: $(Build.ArtifactStagingDirectory)/downloads/
+          downloadPath: $(Build.ArtifactStagingDirectory)/sbom-downloads/
+      
+    - task: PowerShell@2
+      displayName: Set SBOM path
+      inputs:
+        targetType: inline
+        script: |
+          $SbomDownloadPath = $(Build.ArtifactStagingDirectory/sbom-downloads/microsoft.manifesttool.crossplatform.2.0.6\Content\
+          Write-Host "##vso[task.setvariable variable=SbomDownloadPath;isOutput=true]$SbomDownloadPath"
 
   - ${{ if and(eq(parameters.runAsPublic, 'false'), eq(variables['System.TeamProject'], 'internal')) }}:
     - task: NuGetAuthenticate@0
@@ -174,12 +182,6 @@ jobs:
           SourceFolder: 'artifacts/packages'
           Contents: '**'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts/packages'
-      - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-        displayName: 'Generation Task'
-        inputs:
-          BuildDropPath: '$(Build.ArtifactStagingDirectory)/artifacts/packages'
-          ManifestDirPath: '$(Build.ArtifactStagingDirectory)/artifacts/packages/_manifest'
-          Verbosity: 'Debug'
       - task: PublishBuildArtifacts@1
         displayName: Publish pipeline artifacts
         inputs:
