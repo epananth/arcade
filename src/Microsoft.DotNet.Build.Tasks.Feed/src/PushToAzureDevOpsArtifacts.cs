@@ -60,6 +60,8 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
         public string SbomDownloadPath {get; set;}
 
+        public string SbomGeneration { get; set; }
+
         /// <summary>
         /// Which version should the build manifest be tagged with.
         /// By default he latest version is used.
@@ -178,16 +180,17 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 $"##vso[artifact.upload containerfolder=BlobArtifacts;artifactname=BlobArtifacts]{blobItem.ItemSpec}");
                         }
 
-                        if (Directory.Exists(SbomDownloadPath))
+                        if (Directory.Exists(SbomDownloadPath) && Directory.Exists(SbomGeneration))
                         {
                             Log.LogMessage($"{SbomDownloadPath} exists");
                             Log.LogMessage($"Running the process");
-                            string arguments = $"generate -b {blobItems} -pn blobArtifacts -V Debug";
+                            var fullPath = Path.Combine(SbomDownloadPath, "Microsoft.ManifestTool.exe");
+                            string arguments = $"generate -b {blobItems} -pn blobArtifacts -V Debug -m {SbomGeneration}";
                             var processStartInfo = new ProcessStartInfo()
                             {
                                 FileName = "cmd.exe",
                                 UseShellExecute = false,
-                                Arguments = $"{"Microsoft.ManifestTool.exe"} {arguments}",
+                                Arguments = $"{fullPath} {arguments}",
                                 WorkingDirectory = SbomDownloadPath,
                                 RedirectStandardOutput = true,
                                 RedirectStandardError = true

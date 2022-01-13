@@ -134,7 +134,10 @@ jobs:
         targetType: inline
         script: |
           $SbomDownloadPath = "$(Build.ArtifactStagingDirectory)\sbom-downloads\microsoft.manifesttool.crossplatform.2.0.6\Content"
+          $SbomGeneration = "$(Build.ArtifactStagingDirectory)\tmpDir"
+          New-Item -Path $SbomGeneration -Force -ItemType 'Directory'
           Write-Host "##vso[task.setvariable variable=SbomDownloadPath]$SbomDownloadPath"
+          Write-Host "##vso[task.setvariable variable=SbomGeneration]$SbomGeneration"
 
   - ${{ if and(eq(parameters.runAsPublic, 'false'), eq(variables['System.TeamProject'], 'internal')) }}:
     - task: NuGetAuthenticate@0
@@ -167,6 +170,13 @@ jobs:
         continueOnError: ${{ parameters.continueOnError }}
         env:
           TeamName: $(_TeamName)
+    
+      - task: PublishPipelineArtifact@1
+        displayName: Publish Sbom manifest
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)\tmpDir'
+          artifactName: 'sbom'
+        condition: succeeded()
 
   - ${{ if ne(parameters.artifacts.publish, '') }}:
     - ${{ if or(eq(parameters.artifacts.publish.artifacts, 'true'), ne(parameters.artifacts.publish.artifacts, '')) }}:
