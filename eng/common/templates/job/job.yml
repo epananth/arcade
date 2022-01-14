@@ -135,9 +135,9 @@ jobs:
         script: |
           if(Test-path $(Build.ArtifactStagingDirectory)\sbom-downloads\){
             Get-ChildItem $(Build.ArtifactStagingDirectory)\sbom-downloads
-            if(Test-path $(Build.ArtifactStagingDirectory)\sbom-downloads\microsoft.manifesttool.crossplatform.2.0.6){
-              Get-ChildItem $(Build.ArtifactStagingDirectory)\sbom-downloads\microsoft.manifesttool.crossplatform.2.0.6
-              $SbomDownloadPath = "$(Build.ArtifactStagingDirectory)\sbom-downloads\microsoft.manifesttool.crossplatform.2.0.6\Content"
+            if(Test-path $(Build.ArtifactStagingDirectory)\sbom-downloads\Content){
+              Get-ChildItem $(Build.ArtifactStagingDirectory)\sbom-downloads\Content
+              $SbomDownloadPath = "$(Build.ArtifactStagingDirectory)\sbom-downloads\Content"
               $SbomGeneration = "$(Build.ArtifactStagingDirectory)\tmpDir"
               New-Item -Path $SbomGeneration -Force -ItemType 'Directory'
               Write-Host "##vso[task.setvariable variable=SbomDownloadPath]$SbomDownloadPath"
