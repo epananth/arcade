@@ -90,9 +90,7 @@
                     ManifestCommit="$(ManifestCommit)"
                     ManifestBuildData="$(ManifestBuildData)"
                     ManifestRepoUri="$(ManifestRepoUri)"
-                    AssetManifestPath="$(AssetManifestFilePath)"
-                    SbomDownloadPath= "$(SbomDownloadPath)"
-                    SbomGeneration= "$(SbomGeneration)"/>
+                    AssetManifestPath="$(AssetManifestFilePath)"/>
   </Target>
 
   <Target Name="PublishFilesToBlobFeed">
@@ -123,9 +121,7 @@
                     ManifestCommit="$(ManifestCommit)"
                     ManifestBuildData="$(ManifestBuildData)"
                     ManifestRepoUri="$(ManifestRepoUri)"
-                    AssetManifestPath="$(AssetManifestFilePath)"
-                    SbomDownloadPath= "$(SbomDownloadPath)"
-                    SbomGeneration= "$(SbomGeneration)" />
+                    AssetManifestPath="$(AssetManifestFilePath)" />
 
   </Target>
 

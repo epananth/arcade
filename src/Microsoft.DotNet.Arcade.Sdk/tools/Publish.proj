@@ -166,7 +166,9 @@
       IsStableBuild="$(IsStableBuild)"
       PublishingVersion="$(PublishingVersion)"
       AssetManifestPath="$(AssetManifestFilePath)" 
-      IsReleaseOnlyPackageVersion="$(IsReleaseOnlyPackageVersion)" />
+      IsReleaseOnlyPackageVersion="$(IsReleaseOnlyPackageVersion)"
+      SbomDownloadPath= "$(SbomDownloadPath)"
+      SbomGeneration= "$(SbomGeneration)" />
 
     <!-- 
         Publish Windows PDBs produced by SymStore.targets (by default, only shipping PDBs are placed there).
