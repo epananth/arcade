@@ -183,14 +183,14 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                         if (Directory.Exists(SbomDownloadPath) && Directory.Exists(SbomGeneration))
                         {
                             Log.LogMessage($"{SbomDownloadPath} exists");
-                            Log.LogMessage($"Running the process");
+                            Log.LogMessage($"Running the sbom generation process");
                             var fullPath = Path.Combine(SbomDownloadPath, "Microsoft.ManifestTool.exe");
-                            string arguments = $"generate -b {blobItems} -pn blobArtifacts -V Debug -m {SbomGeneration}";
+                            string arguments = $"generate -b {ItemsToPush} -V Debug -m {SbomGeneration}";
                             var processStartInfo = new ProcessStartInfo()
                             {
-                                FileName = "cmd.exe",
+                                FileName = Path.Combine(SbomDownloadPath, "Microsoft.ManifestTool.exe"),
                                 UseShellExecute = false,
-                                Arguments = $"{fullPath} {arguments}",
+                                Arguments = $"{arguments}",
                                 WorkingDirectory = SbomDownloadPath,
                                 RedirectStandardOutput = true,
                                 RedirectStandardError = true
