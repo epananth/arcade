@@ -133,11 +133,23 @@ jobs:
       inputs:
         targetType: inline
         script: |
-          $SbomDownloadPath = "$(Build.ArtifactStagingDirectory)\sbom-downloads\microsoft.manifesttool.crossplatform.2.0.6\Content"
-          $SbomGeneration = "$(Build.ArtifactStagingDirectory)\tmpDir"
-          New-Item -Path $SbomGeneration -Force -ItemType 'Directory'
-          Write-Host "##vso[task.setvariable variable=SbomDownloadPath]$SbomDownloadPath"
-          Write-Host "##vso[task.setvariable variable=SbomGeneration]$SbomGeneration"
+          if(Test-path $(Build.ArtifactStagingDirectory)\sbom-downloads\){
+            if(Test-path $(Build.ArtifactStagingDirectory)\sbom-downloads\microsoft.manifesttool.crossplatform.2.0.6){
+              Get-ChildItem $(Build.ArtifactStagingDirectory)\sbom-downloads\microsoft.manifesttool.crossplatform.2.0.6
+              $SbomDownloadPath = "$(Build.ArtifactStagingDirectory)\sbom-downloads\microsoft.manifesttool.crossplatform.2.0.6\Content"
+              $SbomGeneration = "$(Build.ArtifactStagingDirectory)\tmpDir"
+              New-Item -Path $SbomGeneration -Force -ItemType 'Directory'
+              Write-Host "##vso[task.setvariable variable=SbomDownloadPath]$SbomDownloadPath"
+              Write-Host "##vso[task.setvariable variable=SbomGeneration]$SbomGeneration"
+            }
+            else{
+              Write-Host "Path $(Build.ArtifactStagingDirectory)\sbom-downloads\microsoft.manifesttool.crossplatform.2.0.6 does not exists"
+            }
+            else{
+              Write-Host "No sbom-downloads file"
+            }
+          }
+
 
   - ${{ if and(eq(parameters.runAsPublic, 'false'), eq(variables['System.TeamProject'], 'internal')) }}:
     - task: NuGetAuthenticate@0
