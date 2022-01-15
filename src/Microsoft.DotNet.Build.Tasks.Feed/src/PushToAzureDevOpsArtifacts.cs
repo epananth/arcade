@@ -156,6 +156,10 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                             .Except(blobItems)
                             .ToArray();
 
+
+                        var sbomPackagesPath = Path.GetDirectoryName(packageItems[0].ItemSpec);
+                        var sbomBlobPath = Path.GetDirectoryName(blobItems[0].ItemSpec);
+
                         foreach (var packagePath in packageItems)
                         {
                             if (!fileSystem.FileExists(packagePath.ItemSpec))
@@ -185,7 +189,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                             Log.LogMessage($"{SbomDownloadPath} exists");
                             Log.LogMessage($"Running the sbom generation process");
                             var fullPath = Path.Combine(SbomDownloadPath, "Microsoft.ManifestTool.exe");
-                            string arguments = $"generate -b {ItemsToPush} -V Debug -m {SbomGeneration}";
+                            string arguments = $"generate -b {sbomPackagesPath} -V Debug -m {SbomGeneration}";
                             var processStartInfo = new ProcessStartInfo()
                             {
                                 FileName = Path.Combine(SbomDownloadPath, "Microsoft.ManifestTool.exe"),
@@ -195,16 +199,25 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 RedirectStandardOutput = true,
                                 RedirectStandardError = true
                             };
-                            var process = Process.Start(processStartInfo);
-                            process.WaitForExit();
-
-                            if (process.ExitCode != 0)
+                            try
                             {
-                                Log.LogError($"Failed to execute the project");
+                                var process = Process.Start(processStartInfo);
+                                process.WaitForExit();
+
+                                if (process.ExitCode != 0)
+                                {
+                                    Log.LogError($"Failed to execute the project");
+                                }
+
+                                Log.LogMessage("Ran the project without any errors");
+                                Log.LogMessage(MessageImportance.High,
+                                    $"##vso[artifact.upload containerfolder=sbom-packages;artifactname=sbom-packages]{SbomGeneration}");
+
                             }
-                            Log.LogMessage("Ran the project without any errors");
-                            Log.LogMessage(MessageImportance.High,
-                                $"##vso[artifact.upload containerfolder=sbom-blob;artifactname=sbom-blob]{SbomGeneration}");
+                            catch (Exception ex)
+                            {
+                                Log.LogMessage(ex.Message);
+                            }
                         }
 
                         packageArtifacts = packageItems.Select(packageArtifactModelFactory.CreatePackageArtifactModel);
