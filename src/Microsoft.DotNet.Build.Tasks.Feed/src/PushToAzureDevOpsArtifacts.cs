@@ -192,7 +192,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                             string arguments = $"generate -b {sbomPackagesPath} -V Debug -m {SbomGeneration}";
                             var processStartInfo = new ProcessStartInfo()
                             {
-                                FileName = Path.Combine(SbomDownloadPath, "Microsoft.ManifestTool.exe"),
+                                FileName = fullPath,
                                 UseShellExecute = false,
                                 Arguments = $"{arguments}",
                                 WorkingDirectory = SbomDownloadPath,
@@ -218,6 +218,10 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                             {
                                 Log.LogMessage(ex.Message);
                             }
+                        }
+                        else
+                        {
+                            Log.LogError($"sbom folder does not exists");
                         }
 
                         packageArtifacts = packageItems.Select(packageArtifactModelFactory.CreatePackageArtifactModel);
