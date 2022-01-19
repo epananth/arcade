@@ -186,6 +186,8 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
                         if (Directory.Exists(SbomDownloadPath) && Directory.Exists(SbomGeneration))
                         {
+                            Log.LogMessage(MessageImportance.High, $"{sbomPackagesPath}");
+                            Log.LogMessage(MessageImportance.High, $"{sbomBlobPath}");
                             Log.LogMessage($"{SbomDownloadPath} exists");
                             Log.LogMessage($"Running the sbom generation process");
                             var fullPath = Path.Combine(SbomDownloadPath, "Microsoft.ManifestTool.exe");
@@ -196,8 +198,8 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 UseShellExecute = false,
                                 Arguments = $"{arguments}",
                                 WorkingDirectory = SbomDownloadPath,
-                                RedirectStandardOutput = true,
-                                RedirectStandardError = true
+                                RedirectStandardOutput = false,
+                                RedirectStandardError = false
                             };
                             try
                             {
