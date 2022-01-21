@@ -81,7 +81,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
             collection.TryAddSingleton(Log);
         }
 
-        public async Task ExecuteTask(IFileSystem fileSystem,
+        public async Task <bool> ExecuteTask(IFileSystem fileSystem,
             ISigningInformationModelFactory signingInformationModelFactory,
             IBlobArtifactModelFactory blobArtifactModelFactory,
             IPackageArtifactModelFactory packageArtifactModelFactory,
@@ -234,9 +234,8 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                 Log.LogErrorFromException(e, true);
             }
 
-            if(!Log.HasLoggedErrors){
-                return;
-            };
+            return (!Log.HasLoggedErrors);
+
         }
 
         public async Task GenerateSbom(string SbomDownloadPath, string SbomGeneration, string sbomPackagesPath,
@@ -250,7 +249,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
             string arguments = $"generate -b {sbomPackagesPath} -m {SbomGeneration} -V Debug";
             Func<string, string, Task<GeneralUtils.ProcessExecutionResult>> RunProcessAndGetOutputsCallBack = null;
             RunProcessAndGetOutputsCallBack ??= GeneralUtils.RunProcessAndGetOutputsAsync;
-            var nugetResult = await RunProcessAndGetOutputsCallBack(fullPath, arguments);
+            var nugetResult = await  RunProcessAndGetOutputsCallBack(fullPath, arguments);
             if (nugetResult.ExitCode == 0)
             {
                 Log.LogMessage($"Ran the project without any errors");
