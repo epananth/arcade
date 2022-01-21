@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Microsoft.DotNet.Build.Tasks.Feed
 {
@@ -80,7 +81,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
             collection.TryAddSingleton(Log);
         }
 
-        public bool ExecuteTask(IFileSystem fileSystem,
+        public async Task ExecuteTask(IFileSystem fileSystem,
             ISigningInformationModelFactory signingInformationModelFactory,
             IBlobArtifactModelFactory blobArtifactModelFactory,
             IPackageArtifactModelFactory packageArtifactModelFactory,
@@ -186,40 +187,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
                         if (Directory.Exists(SbomDownloadPath) && Directory.Exists(SbomGeneration))
                         {
-                            Log.LogMessage(MessageImportance.High, $"{sbomPackagesPath}");
-                            Log.LogMessage(MessageImportance.High, $"{sbomBlobPath}");
-                            Log.LogMessage($"{SbomDownloadPath} exists");
-                            Log.LogMessage($"Running the sbom generation process");
-                            var fullPath = Path.Combine(SbomDownloadPath, "Microsoft.ManifestTool.exe");
-                            string arguments = $"generate -b {sbomPackagesPath} -V Debug -m {SbomGeneration}";
-                            var processStartInfo = new ProcessStartInfo()
-                            {
-                                FileName = fullPath,
-                                UseShellExecute = false,
-                                Arguments = $"{arguments}",
-                                WorkingDirectory = SbomDownloadPath,
-                                RedirectStandardOutput = false,
-                                RedirectStandardError = false
-                            };
-                            try
-                            {
-                                var process = Process.Start(processStartInfo);
-                                process.WaitForExit();
-
-                                if (process.ExitCode != 0)
-                                {
-                                    Log.LogError($"Failed to execute the project");
-                                }
-
-                                Log.LogMessage("Ran the project without any errors");
-                                Log.LogMessage(MessageImportance.High,
-                                    $"##vso[artifact.upload containerfolder=sbom-packages;artifactname=sbom-packages]{SbomGeneration}");
-
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.LogMessage(ex.Message);
-                            }
+                           await GenerateSbom(SbomDownloadPath, SbomGeneration, sbomPackagesPath, sbomBlobPath);
                         }
                         else
                         {
@@ -266,7 +234,36 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                 Log.LogErrorFromException(e, true);
             }
 
-            return !Log.HasLoggedErrors;
+            if(!Log.HasLoggedErrors){
+                return;
+            };
+        }
+
+        public async Task GenerateSbom(string SbomDownloadPath, string SbomGeneration, string sbomPackagesPath,
+            string sbomBlobPath)
+        {
+            Log.LogMessage(MessageImportance.High, $"Package path to generate manifest{sbomPackagesPath}");
+            Log.LogMessage(MessageImportance.High, $"Blob path to generate manifest {sbomBlobPath}");
+            Log.LogMessage($"Sbom download path exists : {SbomDownloadPath} exists");
+            Log.LogMessage($"Running the sbom generation process");
+            var fullPath = Path.Combine(SbomDownloadPath, "Microsoft.ManifestTool.exe");
+            string arguments = $"generate -b {sbomPackagesPath} -m {SbomGeneration} -V Debug";
+            Func<string, string, Task<GeneralUtils.ProcessExecutionResult>> RunProcessAndGetOutputsCallBack = null;
+            RunProcessAndGetOutputsCallBack ??= GeneralUtils.RunProcessAndGetOutputsAsync;
+            var nugetResult = await RunProcessAndGetOutputsCallBack(fullPath, arguments);
+            if (nugetResult.ExitCode == 0)
+            {
+                Log.LogMessage($"Ran the project without any errors");
+                Log.LogMessage(MessageImportance.High, nugetResult.StandardOut);
+                Log.LogMessage(MessageImportance.High,
+                                    $"##vso[artifact.upload containerfolder=sbom-packages;artifactname=sbom-packages]{SbomGeneration}");
+            }
+            else
+            {
+                Log.LogMessage($"error occurred {nugetResult.StandardError}");
+            }
         }
     }
+
+
 }
