@@ -81,7 +81,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
             collection.TryAddSingleton(Log);
         }
 
-        public async Task <bool> ExecuteTask(IFileSystem fileSystem,
+        public bool ExecuteTask(IFileSystem fileSystem,
             ISigningInformationModelFactory signingInformationModelFactory,
             IBlobArtifactModelFactory blobArtifactModelFactory,
             IPackageArtifactModelFactory packageArtifactModelFactory,
@@ -187,7 +187,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
                         if (Directory.Exists(SbomDownloadPath) && Directory.Exists(SbomGeneration))
                         {
-                           await GenerateSbom(SbomDownloadPath, SbomGeneration, sbomPackagesPath, sbomBlobPath);
+                          GenerateSbom(SbomDownloadPath, SbomGeneration, sbomPackagesPath, sbomBlobPath).GetAwaiter();
                         }
                         else
                         {
