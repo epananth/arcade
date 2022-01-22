@@ -250,6 +250,8 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
             Func<string, string, Task<GeneralUtils.ProcessExecutionResult>> RunProcessAndGetOutputsCallBack = null;
             RunProcessAndGetOutputsCallBack ??= GeneralUtils.RunProcessAndGetOutputsAsync;
             var nugetResult = await  RunProcessAndGetOutputsCallBack(fullPath, arguments);
+            Log.LogMessage(MessageImportance.High, nugetResult.StandardOut);
+            Log.LogMessage(MessageImportance.High, $"exit code {nugetResult.ExitCode}");
             if (nugetResult.ExitCode == 0)
             {
                 Log.LogMessage($"Ran the project without any errors");
