@@ -187,7 +187,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
                         if (Directory.Exists(SbomDownloadPath) && Directory.Exists(SbomGeneration))
                         {
-                          GenerateSbom(SbomDownloadPath, SbomGeneration, sbomPackagesPath, sbomBlobPath).GetAwaiter();
+                          GenerateSbom(SbomDownloadPath, SbomGeneration, sbomPackagesPath, sbomBlobPath).GetAwaiter().GetResult();
                         }
                         else
                         {
