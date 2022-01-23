@@ -157,10 +157,6 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                             .Except(blobItems)
                             .ToArray();
 
-
-                        var sbomPackagesPath = Path.GetDirectoryName(packageItems[0].ItemSpec);
-                        var sbomBlobPath = Path.GetDirectoryName(blobItems[0].ItemSpec);
-
                         foreach (var packagePath in packageItems)
                         {
                             if (!fileSystem.FileExists(packagePath.ItemSpec))
@@ -185,17 +181,35 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 $"##vso[artifact.upload containerfolder=BlobArtifacts;artifactname=BlobArtifacts]{blobItem.ItemSpec}");
                         }
 
+                        packageArtifacts = packageItems.Select(packageArtifactModelFactory.CreatePackageArtifactModel);
+                        blobArtifacts = blobItems.Select(i => blobArtifactModelFactory.CreateBlobArtifactModel(i))
+                            .Where(blob => blob != null);
+
+                        var sbomPackagesPath = Path.GetDirectoryName(packageItems[0].ItemSpec);
+                        var sbomBlobPath = Path.GetDirectoryName(blobItems[0].ItemSpec);
+
                         if (Directory.Exists(SbomDownloadPath) && Directory.Exists(SbomGeneration))
                         {
-                          GenerateSbom(SbomDownloadPath, SbomGeneration, sbomPackagesPath, sbomBlobPath).GetAwaiter().GetResult();
+                            Log.LogMessage(MessageImportance.High, $" sbom download path {SbomDownloadPath}");
+                            Log.LogMessage(MessageImportance.High, $" sbom generation path {SbomGeneration}");
+                            var packagesDir = Path.Combine(SbomGeneration, "Packages");
+                            var blobDir = Path.Combine(SbomGeneration, "Blobs");
+                            EnsureDirectoryExists(packagesDir);
+                            EnsureDirectoryExists(blobDir);
+                            int pCount = Directory.GetFiles(sbomPackagesPath, "*", SearchOption.AllDirectories).Length;
+                            int bCount = Directory.GetFiles(sbomPackagesPath, "*", SearchOption.AllDirectories).Length;
+                            Log.LogMessage(MessageImportance.High, $"Number of files in sbomPackagesPath {pCount}");
+                            Log.LogMessage(MessageImportance.High, $"Number of files in sbomBlobPath {bCount}");
+                            GenerateSbom(SbomDownloadPath, packagesDir, sbomPackagesPath).GetAwaiter().GetResult();
+                            GenerateSbom(SbomDownloadPath, blobDir, sbomBlobPath).GetAwaiter().GetResult();
+                            Log.LogMessage(MessageImportance.High,
+                                $"##vso[artifact.upload containerfolder=sbom-test;artifactname=sbom-test]{SbomGeneration}");
                         }
                         else
                         {
                             Log.LogError($"sbom folder does not exists");
                         }
 
-                        packageArtifacts = packageItems.Select(packageArtifactModelFactory.CreatePackageArtifactModel);
-                        blobArtifacts = blobItems.Select(i => blobArtifactModelFactory.CreateBlobArtifactModel(i)).Where(blob => blob != null);
                     }
 
                     PublishingInfraVersion targetPublishingVersion = PublishingInfraVersion.Latest;
@@ -238,24 +252,27 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
         }
 
-        public async Task GenerateSbom(string SbomDownloadPath, string SbomGeneration, string sbomPackagesPath,
-            string sbomBlobPath)
+        public void EnsureDirectoryExists(string temporaryLocation)
+        {
+            if (!Directory.Exists(temporaryLocation))
+            {
+                Directory.CreateDirectory(temporaryLocation);
+            }
+        }
+
+        public async Task GenerateSbom(string SbomDownloadPath, string manifestDir, string sbomPackagesPath)
         {
             Log.LogMessage(MessageImportance.High, $"Package path to generate manifest{sbomPackagesPath}");
-            Log.LogMessage(MessageImportance.High, $"Blob path to generate manifest {sbomBlobPath}");
             Log.LogMessage($"Sbom download path exists : {SbomDownloadPath} exists");
             Log.LogMessage($"Running the sbom generation process");
             var fullPath = Path.Combine(SbomDownloadPath, "Microsoft.ManifestTool.exe");
-            string arguments = $"generate -b {sbomPackagesPath} -m {SbomGeneration} -V Debug";
+            string arguments = $"generate -b {sbomPackagesPath} -m {manifestDir} -V Verbose";
             var nugetResult = await GeneralUtils.RunProcessAndGetOutputsAsync(fullPath, arguments);
             Log.LogMessage(MessageImportance.High, $"Nuget standard output-------->{nugetResult.StandardOut}");
             Log.LogMessage(MessageImportance.High, $"Exit code {nugetResult.ExitCode}");
             if (nugetResult.ExitCode == 0)
             {
                 Log.LogMessage($"Ran the project without any errors");
-                Log.LogMessage(MessageImportance.High, nugetResult.StandardOut);
-                Log.LogMessage(MessageImportance.High,
-                                    $"##vso[artifact.upload containerfolder=sbom-packages;artifactname=sbom-packages]{SbomGeneration}");
             }
             else
             {
