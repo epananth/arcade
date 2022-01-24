@@ -115,36 +115,6 @@ jobs:
         continueOnError: ${{ parameters.continueOnError }}
         condition: and(succeeded(), in(variables['_SignType'], 'real', 'test'), eq(variables['Agent.Os'], 'Windows_NT'))
 
-  # authenticate here and download the package 
-      - task: NuGetAuthenticate@0
-        displayName: 'Authenticate to AzDO Feeds'
-
-      - task: DownloadPackage@1
-        inputs:
-          packageType: nuget
-          feed: internal/dotnet-espkgs
-          definition: Microsoft.ManifestTool.CrossPlatform
-          version: 2.0.6
-          extract: true
-          downloadPath: $(Build.ArtifactStagingDirectory)/sbom-downloads/
-      
-    - task: PowerShell@2
-      displayName: Set SBOM path
-      inputs:
-        targetType: inline
-        script: |
-          if(Test-path $(Build.ArtifactStagingDirectory)\sbom-downloads\){
-            Get-ChildItem $(Build.ArtifactStagingDirectory)\sbom-downloads
-            if(Test-path $(Build.ArtifactStagingDirectory)\sbom-downloads\Content){
-              Get-ChildItem $(Build.ArtifactStagingDirectory)\sbom-downloads\Content
-              $SbomDownloadPath = "$(Build.ArtifactStagingDirectory)\sbom-downloads\Content"
-              $SbomGeneration = "$(Build.ArtifactStagingDirectory)\tmpDir"
-              New-Item -Path $SbomGeneration -Force -ItemType 'Directory'
-              Write-Host "##vso[task.setvariable variable=SbomDownloadPath]$SbomDownloadPath"
-              Write-Host "##vso[task.setvariable variable=SbomGeneration]$SbomGeneration"
-            }
-          }
-
   - ${{ if and(eq(parameters.runAsPublic, 'false'), eq(variables['System.TeamProject'], 'internal')) }}:
     - task: NuGetAuthenticate@0
 
