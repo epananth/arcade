@@ -168,7 +168,9 @@
       AssetManifestPath="$(AssetManifestFilePath)" 
       IsReleaseOnlyPackageVersion="$(IsReleaseOnlyPackageVersion)"
       SbomDownloadPath= "$(SbomDownloadPath)"
-      SbomGeneration= "$(SbomGeneration)" />
+      SbomGeneration= "$(SbomGeneration)"
+      ArtifactsNonShippingPackagesDir = "$(ArtifactsNonShippingPackagesDir)" 
+      ArtifactsShippingPackagesDir = $"(ArtifactsShippingPackagesDir)"/>
 
     <!-- 
         Publish Windows PDBs produced by SymStore.targets (by default, only shipping PDBs are placed there).

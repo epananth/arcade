@@ -63,6 +63,10 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
         public string SbomGeneration { get; set; }
 
+        public string ArtifactsNonShippingPackagesDir {get; set;}
+
+        public string ArtifactsShippingPackagesDir { get; set; }
+
         /// <summary>
         /// Which version should the build manifest be tagged with.
         /// By default he latest version is used.
@@ -106,8 +110,9 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                     IEnumerable<BlobArtifactModel> blobArtifacts = Enumerable.Empty<BlobArtifactModel>();
                     IEnumerable<PackageArtifactModel> packageArtifacts = Enumerable.Empty<PackageArtifactModel>();
 
-                    var itemsToPushNoExcludes = ItemsToPush.
-                        Where(i => !string.Equals(i.GetMetadata("ExcludeFromManifest"), "true", StringComparison.OrdinalIgnoreCase));
+                    var itemsToPushNoExcludes = ItemsToPush.Where(i =>
+                        !string.Equals(i.GetMetadata("ExcludeFromManifest"), "true",
+                            StringComparison.OrdinalIgnoreCase));
 
                     if (PublishFlatContainer)
                     {
@@ -185,31 +190,6 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                         blobArtifacts = blobItems.Select(i => blobArtifactModelFactory.CreateBlobArtifactModel(i))
                             .Where(blob => blob != null);
 
-                        var sbomPackagesPath = Path.GetDirectoryName(packageItems[0].ItemSpec);
-                        var sbomBlobPath = Path.GetDirectoryName(blobItems[0].ItemSpec);
-
-                        if (Directory.Exists(SbomDownloadPath) && Directory.Exists(SbomGeneration))
-                        {
-                            Log.LogMessage(MessageImportance.High, $" sbom download path {SbomDownloadPath}");
-                            Log.LogMessage(MessageImportance.High, $" sbom generation path {SbomGeneration}");
-                            var packagesDir = Path.Combine(SbomGeneration, "Packages");
-                            var blobDir = Path.Combine(SbomGeneration, "Blobs");
-                            EnsureDirectoryExists(packagesDir);
-                            EnsureDirectoryExists(blobDir);
-                            int pCount = Directory.GetFiles(sbomPackagesPath, "*", SearchOption.AllDirectories).Length;
-                            int bCount = Directory.GetFiles(sbomPackagesPath, "*", SearchOption.AllDirectories).Length;
-                            Log.LogMessage(MessageImportance.High, $"Number of files in sbomPackagesPath {pCount}");
-                            Log.LogMessage(MessageImportance.High, $"Number of files in sbomBlobPath {bCount}");
-                            GenerateSbom(SbomDownloadPath, packagesDir, sbomPackagesPath).GetAwaiter().GetResult();
-                            GenerateSbom(SbomDownloadPath, blobDir, sbomBlobPath).GetAwaiter().GetResult();
-                            Log.LogMessage(MessageImportance.High,
-                                $"##vso[artifact.upload containerfolder=sbom-test;artifactname=sbom-test]{SbomGeneration}");
-                        }
-                        else
-                        {
-                            Log.LogError($"sbom folder does not exists");
-                        }
-
                     }
 
                     PublishingInfraVersion targetPublishingVersion = PublishingInfraVersion.Latest;
@@ -221,9 +201,11 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                             Log.LogError($"Could not parse publishing infra version '{PublishingVersion}'");
                         }
                     }
-                    
-                    SigningInformationModel signingInformationModel = signingInformationModelFactory.CreateSigningInformationModelFromItems(
-                        ItemsToSign, StrongNameSignInfo, FileSignInfo, FileExtensionSignInfo, CertificatesSignInfo, blobArtifacts, packageArtifacts);
+
+                    SigningInformationModel signingInformationModel =
+                        signingInformationModelFactory.CreateSigningInformationModelFromItems(
+                            ItemsToSign, StrongNameSignInfo, FileSignInfo, FileExtensionSignInfo, CertificatesSignInfo,
+                            blobArtifacts, packageArtifacts);
 
                     buildModelFactory.CreateBuildManifest(
                         blobArtifacts,
@@ -241,6 +223,43 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
                     Log.LogMessage(MessageImportance.High,
                         $"##vso[artifact.upload containerfolder=AssetManifests;artifactname=AssetManifests]{AssetManifestPath}");
+
+                    //var sbomPackagesPath = Path.GetDirectoryName(ArtifactsShippingPackagesDir);
+                    //var sbomBlobPath = Path.GetDirectoryName(blobItems[0].ItemSpec);
+
+                    if (Directory.Exists(SbomDownloadPath) && Directory.Exists(SbomGeneration))
+                    {
+                        Log.LogMessage(MessageImportance.High, $" sbom download path {SbomDownloadPath}");
+                        Log.LogMessage(MessageImportance.High, $" sbom generation path {SbomGeneration}");
+                        var shippingsbom = Path.Combine(SbomGeneration, "Shipping");
+                        var nonshippingsbom = Path.Combine(SbomGeneration, "NonShipping");
+                        EnsureDirectoryExists(shippingsbom);
+                        EnsureDirectoryExists(nonshippingsbom);
+                        int shippingDir = Directory
+                            .GetFiles(ArtifactsShippingPackagesDir, "*", SearchOption.AllDirectories).Length;
+                        int nonShippingDir = Directory
+                            .GetFiles(ArtifactsNonShippingPackagesDir, "*", SearchOption.AllDirectories).Length;
+                        Log.LogMessage(MessageImportance.High, $"Number of files in shippingDir {shippingDir}");
+                        Log.LogMessage(MessageImportance.High, $"Number of files in nonShippingDir {nonShippingDir}");
+                        if (shippingDir > 1)
+                        {
+                            GenerateSbom(SbomDownloadPath, shippingsbom, ArtifactsShippingPackagesDir).GetAwaiter()
+                                .GetResult();
+                        }
+
+                        if (nonShippingDir > 1)
+                        {
+                            GenerateSbom(SbomDownloadPath, nonshippingsbom, ArtifactsNonShippingPackagesDir)
+                                .GetAwaiter().GetResult();
+                        }
+
+                        Log.LogMessage(MessageImportance.High,
+                            $"##vso[artifact.upload containerfolder=sbom-test;artifactname=sbom-test]{SbomGeneration}");
+                    }
+                    else
+                    {
+                        Log.LogError($"sbom folder does not exists");
+                    }
                 }
             }
             catch (Exception e)
