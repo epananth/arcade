@@ -231,26 +231,43 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                     {
                         Log.LogMessage(MessageImportance.High, $" sbom download path {SbomDownloadPath}");
                         Log.LogMessage(MessageImportance.High, $" sbom generation path {SbomGeneration}");
-                        var shippingsbom = Path.Combine(SbomGeneration, "Shipping");
-                        var nonshippingsbom = Path.Combine(SbomGeneration, "NonShipping");
-                        EnsureDirectoryExists(shippingsbom);
-                        EnsureDirectoryExists(nonshippingsbom);
-                        int shippingDir = Directory
-                            .GetFiles(ArtifactsShippingPackagesDir, "*", SearchOption.AllDirectories).Length;
-                        int nonShippingDir = Directory
-                            .GetFiles(ArtifactsNonShippingPackagesDir, "*", SearchOption.AllDirectories).Length;
-                        Log.LogMessage(MessageImportance.High, $"Number of files in shippingDir {shippingDir}");
-                        Log.LogMessage(MessageImportance.High, $"Number of files in nonShippingDir {nonShippingDir}");
-                        if (shippingDir > 1)
+                        
+                        if (Directory.Exists(ArtifactsShippingPackagesDir))
                         {
-                            GenerateSbom(SbomDownloadPath, shippingsbom, ArtifactsShippingPackagesDir).GetAwaiter()
-                                .GetResult();
+                            int shippingDir = Directory
+                                .GetFiles(ArtifactsShippingPackagesDir, "*", SearchOption.AllDirectories).Length;
+                            var shippingsbom = Path.Combine(SbomGeneration, "Shipping");
+                            EnsureDirectoryExists(shippingsbom);
+                            Log.LogMessage(MessageImportance.High, $"Number of files in shippingDir {shippingDir}");
+                            if (shippingDir > 1)
+                            {
+                                GenerateSbom(SbomDownloadPath, shippingsbom, ArtifactsShippingPackagesDir).GetAwaiter()
+                                    .GetResult();
+                            }
+                        }
+                        else
+                        {
+                            Log.LogMessage(MessageImportance.High, $"No files in {ArtifactsShippingPackagesDir}");
                         }
 
-                        if (nonShippingDir > 1)
+                        if (Directory.Exists(ArtifactsNonShippingPackagesDir))
                         {
-                            GenerateSbom(SbomDownloadPath, nonshippingsbom, ArtifactsNonShippingPackagesDir)
-                                .GetAwaiter().GetResult();
+                            int nonShippingDir = Directory
+                                .GetFiles(ArtifactsNonShippingPackagesDir, "*", SearchOption.AllDirectories).Length;
+                            
+                            Log.LogMessage(MessageImportance.High,
+                                $"Number of files in nonShippingDir {nonShippingDir}");
+                            if (nonShippingDir > 1)
+                            {
+                                var nonshippingsbom = Path.Combine(SbomGeneration, "NonShipping");
+                                EnsureDirectoryExists(nonshippingsbom);
+                                GenerateSbom(SbomDownloadPath, nonshippingsbom, ArtifactsNonShippingPackagesDir)
+                                    .GetAwaiter().GetResult();
+                            }
+                        }
+                        else
+                        {
+                            Log.LogMessage(MessageImportance.High, $"No files in {ArtifactsNonShippingPackagesDir}");
                         }
 
                         Log.LogMessage(MessageImportance.High,
@@ -258,7 +275,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                     }
                     else
                     {
-                        Log.LogError($"sbom folder does not exists");
+                        Log.LogError($"Sbom folder does not exists");
                     }
                 }
             }

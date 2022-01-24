@@ -145,9 +145,36 @@ jobs:
             }
           }
 
-
   - ${{ if and(eq(parameters.runAsPublic, 'false'), eq(variables['System.TeamProject'], 'internal')) }}:
     - task: NuGetAuthenticate@0
+
+  - ${{ if and(eq(parameters.runAsPublic, 'false'), eq(variables['System.TeamProject'], 'internal')) }}:
+    - task: DownloadPackage@1
+      inputs:
+        packageType: nuget
+        feed: internal/dotnet-espkgs
+        definition: Microsoft.ManifestTool.CrossPlatform
+        version: 2.0.6
+        extract: true
+        downloadPath: $(Build.ArtifactStagingDirectory)/sbom-downloads/
+
+  - ${{ if and(eq(parameters.runAsPublic, 'false'), eq(variables['System.TeamProject'], 'internal')) }}:
+    - task: PowerShell@2
+      displayName: Set SBOM path
+      inputs:
+        targetType: inline
+        script: |
+          if(Test-path $(Build.ArtifactStagingDirectory)\sbom-downloads\){
+            Get-ChildItem $(Build.ArtifactStagingDirectory)\sbom-downloads
+            if(Test-path $(Build.ArtifactStagingDirectory)\sbom-downloads\Content){
+              Get-ChildItem $(Build.ArtifactStagingDirectory)\sbom-downloads\Content
+              $SbomDownloadPath = "$(Build.ArtifactStagingDirectory)\sbom-downloads\Content"
+              $SbomGeneration = "$(Build.ArtifactStagingDirectory)\tmpDir"
+              New-Item -Path $SbomGeneration -Force -ItemType 'Directory'
+              Write-Host "##vso[task.setvariable variable=SbomDownloadPath]$SbomDownloadPath"
+              Write-Host "##vso[task.setvariable variable=SbomGeneration]$SbomGeneration"
+            }
+          }
 
   - ${{ if or(eq(parameters.artifacts.download, 'true'), ne(parameters.artifacts.download, '')) }}:
     - task: DownloadPipelineArtifact@2
