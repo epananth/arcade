@@ -170,7 +170,7 @@
       SbomDownloadPath= "$(SbomDownloadPath)"
       SbomGeneration= "$(SbomGeneration)"
       ArtifactsNonShippingPackagesDir = "$(ArtifactsNonShippingPackagesDir)" 
-      ArtifactsShippingPackagesDir = $"(ArtifactsShippingPackagesDir)"/>
+      ArtifactsShippingPackagesDir = "$(ArtifactsShippingPackagesDir)"/>
 
     <!-- 
         Publish Windows PDBs produced by SymStore.targets (by default, only shipping PDBs are placed there).
