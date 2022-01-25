@@ -232,11 +232,11 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                         GenerateSbom(ArtifactsNonShippingPackagesDir);
                         GenerateSbom(SymbolPackagesDir);
                         Log.LogMessage(MessageImportance.High,
-                            $"##vso[artifact.upload containerfolder=sbom-test;artifactname=sbom-test]{SbomGeneration}");
+                            $"##vso[artifact.upload containerfolder=SBOM;artifactname=SBOM]{SbomGeneration}");
                     }
                     else
                     {
-                        Log.LogError($"Sbom folder does not exists");
+                        Log.LogMessage($"Sbom folder does not exists");
                     }
                 }
             }
