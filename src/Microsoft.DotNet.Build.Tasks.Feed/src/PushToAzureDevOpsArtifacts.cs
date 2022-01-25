@@ -67,6 +67,8 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
         public string ArtifactsShippingPackagesDir { get; set; }
 
+        public string SymbolPackagesDir { get; set; }
+
         /// <summary>
         /// Which version should the build manifest be tagged with.
         /// By default he latest version is used.
@@ -224,52 +226,11 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                     Log.LogMessage(MessageImportance.High,
                         $"##vso[artifact.upload containerfolder=AssetManifests;artifactname=AssetManifests]{AssetManifestPath}");
 
-                    //var sbomPackagesPath = Path.GetDirectoryName(ArtifactsShippingPackagesDir);
-                    //var sbomBlobPath = Path.GetDirectoryName(blobItems[0].ItemSpec);
-
                     if (Directory.Exists(SbomDownloadPath) && Directory.Exists(SbomGeneration))
                     {
-                        Log.LogMessage(MessageImportance.High, $" sbom download path {SbomDownloadPath}");
-                        Log.LogMessage(MessageImportance.High, $" sbom generation path {SbomGeneration}");
-                        
-                        if (Directory.Exists(ArtifactsShippingPackagesDir))
-                        {
-                            int shippingDir = Directory
-                                .GetFiles(ArtifactsShippingPackagesDir, "*", SearchOption.AllDirectories).Length;
-                            var shippingsbom = Path.Combine(SbomGeneration, "Shipping");
-                            EnsureDirectoryExists(shippingsbom);
-                            Log.LogMessage(MessageImportance.High, $"Number of files in shippingDir {shippingDir}");
-                            if (shippingDir > 1)
-                            {
-                                GenerateSbom(SbomDownloadPath, shippingsbom, ArtifactsShippingPackagesDir).GetAwaiter()
-                                    .GetResult();
-                            }
-                        }
-                        else
-                        {
-                            Log.LogMessage(MessageImportance.High, $"No files in {ArtifactsShippingPackagesDir}");
-                        }
-
-                        if (Directory.Exists(ArtifactsNonShippingPackagesDir))
-                        {
-                            int nonShippingDir = Directory
-                                .GetFiles(ArtifactsNonShippingPackagesDir, "*", SearchOption.AllDirectories).Length;
-                            
-                            Log.LogMessage(MessageImportance.High,
-                                $"Number of files in nonShippingDir {nonShippingDir}");
-                            if (nonShippingDir > 1)
-                            {
-                                var nonshippingsbom = Path.Combine(SbomGeneration, "NonShipping");
-                                EnsureDirectoryExists(nonshippingsbom);
-                                GenerateSbom(SbomDownloadPath, nonshippingsbom, ArtifactsNonShippingPackagesDir)
-                                    .GetAwaiter().GetResult();
-                            }
-                        }
-                        else
-                        {
-                            Log.LogMessage(MessageImportance.High, $"No files in {ArtifactsNonShippingPackagesDir}");
-                        }
-
+                        GenerateSbom(ArtifactsShippingPackagesDir);
+                        GenerateSbom(ArtifactsNonShippingPackagesDir);
+                        GenerateSbom(SymbolPackagesDir);
                         Log.LogMessage(MessageImportance.High,
                             $"##vso[artifact.upload containerfolder=sbom-test;artifactname=sbom-test]{SbomGeneration}");
                     }
@@ -296,7 +257,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
             }
         }
 
-        public async Task GenerateSbom(string SbomDownloadPath, string manifestDir, string sbomPackagesPath)
+        public async Task CallSbomGenerator(string SbomDownloadPath, string manifestDir, string sbomPackagesPath)
         {
             Log.LogMessage(MessageImportance.High, $"Package path to generate manifest{sbomPackagesPath}");
             Log.LogMessage($"Sbom download path exists : {SbomDownloadPath} exists");
@@ -313,6 +274,30 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
             else
             {
                 Log.LogMessage($"error occurred {nugetResult.StandardError}");
+            }
+        }
+
+        public void GenerateSbom(string folderToGenerateSbom)
+        {
+            if (Directory.Exists(folderToGenerateSbom))
+            {
+                int packagesToGenerate = Directory
+                    .GetFiles(folderToGenerateSbom, "*", SearchOption.AllDirectories).Length;
+
+                Log.LogMessage(MessageImportance.High,
+                    $"Number of files in {folderToGenerateSbom} : {packagesToGenerate}");
+
+                if (packagesToGenerate > 1)
+                {
+                    var manifestDir = Path.Combine(SbomGeneration, $"sbom-{new DirectoryInfo(folderToGenerateSbom).Name}");
+                    EnsureDirectoryExists(manifestDir);
+                    CallSbomGenerator(SbomDownloadPath, manifestDir, folderToGenerateSbom)
+                        .GetAwaiter().GetResult();
+                }
+            }
+            else
+            {
+                Log.LogMessage(MessageImportance.High, $"No files in {folderToGenerateSbom}");
             }
         }
     }
