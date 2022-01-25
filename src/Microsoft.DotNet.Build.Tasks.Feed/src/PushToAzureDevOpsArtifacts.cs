@@ -259,11 +259,11 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
         public async Task CallSbomGenerator(string SbomDownloadPath, string manifestDir, string sbomPackagesPath)
         {
-            Log.LogMessage(MessageImportance.High, $"Package path to generate manifest{sbomPackagesPath}");
+            Log.LogMessage(MessageImportance.High, $"Package path to generate manifest : {sbomPackagesPath}");
             Log.LogMessage($"Sbom download path exists : {SbomDownloadPath} exists");
             Log.LogMessage($"Running the sbom generation process");
-            var fullPath = Path.Combine(SbomDownloadPath, "Microsoft.ManifestTool.exe");
-            string arguments = $"generate -b {sbomPackagesPath} -m {manifestDir} -V Verbose";
+            var fullPath = Path.Combine(SbomDownloadPath, "Microsoft.ManifestTool.dll");
+            string arguments = $"{fullPath} generate -b {sbomPackagesPath} -m {manifestDir} -V Verbose";
             var nugetResult = await GeneralUtils.RunProcessAndGetOutputsAsync(fullPath, arguments);
             Log.LogMessage(MessageImportance.High, $"Nuget standard output-------->{nugetResult.StandardOut}");
             Log.LogMessage(MessageImportance.High, $"Exit code {nugetResult.ExitCode}");
