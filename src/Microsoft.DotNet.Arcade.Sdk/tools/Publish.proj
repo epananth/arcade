@@ -22,8 +22,8 @@
     <PublishToSourceBuildStorage>false</PublishToSourceBuildStorage>
     <PublishToSourceBuildStorage Condition="'$(DotNetOutputBlobFeedDir)' != ''">true</PublishToSourceBuildStorage>
     
-    <SbomDownloadPath Condition "'$(SbomDownloadPath)' == ''">"DownloadFakePath"</SbomDownloadPath>
-    <SbomGeneration Condition "'$(SbomGeneration)' == ''">"GenerationFakePath"</SbomGeneration>
+    <SbomDownloadPath Condition= "'$(SbomDownloadPath)' == ''">"DownloadFakePath"</SbomDownloadPath>
+    <SbomGeneration Condition= "'$(SbomGeneration)' == ''">"GenerationFakePath"</SbomGeneration>
 
     <!-- Globally set property. -->
     <IsStableBuild>false</IsStableBuild>
