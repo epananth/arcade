@@ -265,17 +265,15 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
             Log.LogMessage($"Sbom download path exists : {SbomDownloadPath} exists");
             Log.LogMessage($"Running the sbom generation process");
             var fullPath = Path.Combine(SbomDownloadPath, "Microsoft.ManifestTool.dll");
-            string arguments = $" {fullPath} generate -b {sbomPackagesPath} -m {manifestDir} -V Verbose";
+            string arguments = $"--roll-forward Major {fullPath} generate -b {sbomPackagesPath} -m {manifestDir} -V Verbose -pn .Net";
             var nugetResult = await GeneralUtils.RunProcessAndGetOutputsAsync(DotnetTool, arguments);
+            Log.LogMessage(MessageImportance.High, $"DotnetTool path {DotnetTool}");
             Log.LogMessage(MessageImportance.High, $"Nuget standard output-------->{nugetResult.StandardOut}");
             Log.LogMessage(MessageImportance.High, $"Exit code {nugetResult.ExitCode}");
-            if (nugetResult.ExitCode == 0)
+            if (nugetResult.ExitCode != 0)
             {
-                Log.LogMessage($"Ran the project without any errors");
-            }
-            else
-            {
-                Log.LogMessage($"error occurred {nugetResult.StandardError}");
+                Log.LogMessage(MessageImportance.High, $"Exit code {nugetResult.ExitCode}");
+                Log.LogError($"error occurred {nugetResult.StandardError}");
             }
         }
 
