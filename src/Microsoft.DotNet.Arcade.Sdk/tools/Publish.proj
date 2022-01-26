@@ -175,7 +175,7 @@
       ArtifactsNonShippingPackagesDir = "$(ArtifactsNonShippingPackagesDir)" 
       ArtifactsShippingPackagesDir = "$(ArtifactsShippingPackagesDir)"
       SymbolPackagesDir = "$(SymbolPackagesDir)"
-      DotnetPath = "$(DotNetTool)"/>
+      DotNetTool = "$(DotNetTool)"/>
 
     <!-- 
         Publish Windows PDBs produced by SymStore.targets (by default, only shipping PDBs are placed there).
