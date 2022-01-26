@@ -69,6 +69,8 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
         public string SymbolPackagesDir { get; set; }
 
+        public string DotnetTool { get; set; }
+
         /// <summary>
         /// Which version should the build manifest be tagged with.
         /// By default he latest version is used.
@@ -232,7 +234,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                         GenerateSbom(ArtifactsNonShippingPackagesDir);
                         GenerateSbom(SymbolPackagesDir);
                         Log.LogMessage(MessageImportance.High,
-                            $"##vso[artifact.upload containerfolder=SBOM;artifactname=SBOM]{SbomGeneration}");
+                            $"##vso[artifact.upload containerfolder=BlobArtifacts;artifactname=BlobArtifacts]{SbomGeneration}");
                     }
                     else
                     {
@@ -263,8 +265,8 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
             Log.LogMessage($"Sbom download path exists : {SbomDownloadPath} exists");
             Log.LogMessage($"Running the sbom generation process");
             var fullPath = Path.Combine(SbomDownloadPath, "Microsoft.ManifestTool.dll");
-            string arguments = $"{fullPath} generate -b {sbomPackagesPath} -m {manifestDir} -V Verbose";
-            var nugetResult = await GeneralUtils.RunProcessAndGetOutputsAsync(fullPath, arguments);
+            string arguments = $" {fullPath} generate -b {sbomPackagesPath} -m {manifestDir} -V Verbose";
+            var nugetResult = await GeneralUtils.RunProcessAndGetOutputsAsync(DotnetTool, arguments);
             Log.LogMessage(MessageImportance.High, $"Nuget standard output-------->{nugetResult.StandardOut}");
             Log.LogMessage(MessageImportance.High, $"Exit code {nugetResult.ExitCode}");
             if (nugetResult.ExitCode == 0)

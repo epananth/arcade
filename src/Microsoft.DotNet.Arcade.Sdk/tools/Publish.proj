@@ -158,7 +158,7 @@
       ItemsToPush="@(ItemsToPushToBlobFeed)"
       ItemsToSign="@(ItemsToSignPostBuild)"
       StrongNameSignInfo="@(StrongNameSignInfo)"
-      CertificatesSignInfo="@(CertificatesSignInfo)"                                
+      CertificatesSignInfo="@(CertificatesSignInfo)"
       FileSignInfo="@(FileSignInfo)"
       FileExtensionSignInfo="@(FileExtensionSignInfo)"
       ManifestBuildData="@(ManifestBuildData)"
@@ -174,7 +174,8 @@
       SbomGeneration= "$(SbomGeneration)"
       ArtifactsNonShippingPackagesDir = "$(ArtifactsNonShippingPackagesDir)" 
       ArtifactsShippingPackagesDir = "$(ArtifactsShippingPackagesDir)"
-      SymbolPackagesDir = "$(SymbolPackagesDir)"/>
+      SymbolPackagesDir = "$(SymbolPackagesDir)"
+      DotnetPath = "$(DotNetTool)"/>
 
     <!-- 
         Publish Windows PDBs produced by SymStore.targets (by default, only shipping PDBs are placed there).
