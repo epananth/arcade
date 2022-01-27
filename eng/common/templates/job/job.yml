@@ -31,6 +31,7 @@ parameters:
   name: ''
   preSteps: []
   runAsPublic: false
+  enableSbom : false
 
 jobs:
 - job: ${{ parameters.name }}
@@ -104,7 +105,7 @@ jobs:
       - ${{ preStep }}
 
   - ${{ if and(eq(parameters.runAsPublic, 'false'), ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-    - ${{ if eq(parameters.enableMicrobuild, 'true') }}:
+    - ${{ if eq(parameters.enableSbom, 'true') }}:
       - task: MicroBuildSigningPlugin@3
         displayName: Install MicroBuild plugin
         inputs:
@@ -119,7 +120,8 @@ jobs:
   - ${{ if and(eq(parameters.runAsPublic, 'false'), eq(variables['System.TeamProject'], 'internal')) }}:
     - task: NuGetAuthenticate@0
 
-  - ${{ if and(eq(parameters.runAsPublic, 'false'), eq(variables['System.TeamProject'], 'internal')) }}:
+  - ${{ if and(eq(parameters.runAsPublic, 'false'), ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+    - ${{ if eq(parameters.enableSbom, 'true') }}:
     - task: DownloadPackage@1
       inputs:
         packageType: nuget
@@ -128,8 +130,6 @@ jobs:
         version: 2.1.3
         extract: true
         downloadPath: $(Build.ArtifactStagingDirectory)/sbom-downloads/
-
-  - ${{ if and(eq(parameters.runAsPublic, 'false'), eq(variables['System.TeamProject'], 'internal')) }}:
     - task: PowerShell@2
       displayName: Set SBOM path
       inputs:
