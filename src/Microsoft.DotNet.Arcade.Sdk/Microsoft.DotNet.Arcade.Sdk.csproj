@@ -29,6 +29,7 @@
     <PackageReference Include="System.Net.Http" Version="$(SystemNetHttpVersion)" />
     <PackageReference Include="System.Collections.Immutable" Version="$(SystemCollectionsImmutableVersion)" />
     <PackageReference Include="System.Reflection.Metadata" Version="$(SystemReflectionMetadataVersion)" />
+    <PackageReference Include="Microsoft.ManifestTool.CrossPlatform" Version="2.1.3" GeneratePathProperty="true" />
   </ItemGroup>
 
   <!-- Required for compiling "InstallDotNetCore.cs" -->
@@ -41,6 +42,12 @@
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="$(SystemThreadingTasksExtensionVersion)" />
   </ItemGroup>
 
+
+  <!-- Commenting this for test
+    <ItemGroup Condition="'$(UsingToolVSSDK)' == 'true'">
+    <PackageReference Include="Microsoft.ManifestTool.CrossPlatform" Version="2.1.3" GeneratePathProperty="true" />
+  </ItemGroup>
+  -->
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.DotNet.Arcade.Sdk.Tests" />
   </ItemGroup>

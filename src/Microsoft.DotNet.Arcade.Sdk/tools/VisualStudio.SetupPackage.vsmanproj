@@ -38,6 +38,7 @@
   <ItemGroup>
     <_PackageStubFiles Include="$(ComponentIntermediateOutputPath)*.stub"/>
     <MergeManifest Include="@(_PackageStubFiles->'$(SetupOutputPath)%(Filename).json')"/>
+    <!-- SBOM File location and SBOM file destination has to be added here-->
   </ItemGroup>
 
   <Import Project="$(SwixBuildPath)build\MicroBuild.Plugins.*.targets" />

@@ -5,6 +5,25 @@
     <_StubDirs Include="@(_StubFiles->'%(RecursiveDir)')"/>
   </ItemGroup>
 
+
+<!--
+  Before pack create the SBOM here
+-->
+  <Target Name ="GenerateSbomForVSInsertion"
+   BeforeTargets="AfterPack">
+
+  <MakeDir Directories="$(ArtifactsDir)\sbom"/>
+    <!---
+    <ItemGroup>
+      <BuildDropPath="%(_StubDirs.Identity)" />
+      <ManifestDir="$(ArtifactsDir)\sbom" />
+      <ManifestToolPath="$(PkgMicrosoft_ManifestTool_CrossPlatform)\Content\Microsoft.ManifestTool.dll" />
+    </ItemGroup>
+    -->
+    <Exec Command = "dotnet $(PkgMicrosoft_ManifestTool_CrossPlatform)\Content\Microsoft.ManifestTool.dll BuildDropPath $(_StubDirs.Identity) ManifestDirPath $(ArtifactsDir)\sbom PackageName VsInsertion -V Debug"/>
+  <Message Text="Generating SBOM manifest" Importance="high"/>
+  </Target>
+
   <!---
     This target is invoked in a separate phase after all input VSIX files are signed.
     This is important since the manifest contain hashes of the VSIX files.
