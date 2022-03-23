@@ -1,11 +1,6 @@
 ﻿<!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RestoreSources>
-      "https://pkgs.dev.azure.com/dnceng/internal/_packaging/dotnet-espkgs/nuget/v3/index.json";
-    </RestoreSources>
-  </PropertyGroup>
-  <PropertyGroup>
     <TargetFrameworks>net472;$(TargetFrameworkForNETSDK)</TargetFrameworks>
     <TargetFrameworks Condition="'$(DotNetBuildFromSource)' == 'true'">$(TargetFrameworkForNETSDK)</TargetFrameworks>
     <LangVersion>preview</LangVersion>
@@ -26,7 +21,9 @@
     <_GeneratedVersionFilePath>$(IntermediateOutputPath)DefaultVersions.Generated.props</_GeneratedVersionFilePath>
     <NoWarn>3021;NU5105;SYSLIB0013</NoWarn>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <RestoreConfigFile>$(RepoRoot)eng\common\sbom\NuGet.config</RestoreConfigFile>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCoreVersion)" />
