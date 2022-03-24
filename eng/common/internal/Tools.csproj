@@ -10,6 +10,7 @@
     <PackageReference Remove="@(PackageReference)"/>
     <PackageReference Include="Microsoft.DotNet.IBCMerge" Version="$(MicrosoftDotNetIBCMergeVersion)" Condition="'$(UsingToolIbcOptimization)' == 'true'" />
     <PackageReference Include="Drop.App" Version="$(DropAppVersion)" ExcludeAssets="all" Condition="'$(UsingToolVisualStudioIbcTraining)' == 'true'"/>
+    <PackageReference Include="Microsoft.ManifestTool.CrossPlatform" Version="2.1.3" GeneratePathProperty="true" />
   </ItemGroup>
   <PropertyGroup>
     <RestoreSources></RestoreSources>
@@ -21,7 +22,6 @@
       https://devdiv.pkgs.visualstudio.com/_packaging/VS/nuget/v3/index.json;
     </RestoreSources>
   </PropertyGroup>
-
   <!-- Repository extensibility point -->
   <Import Project="$(RepositoryEngineeringDir)InternalTools.props" Condition="Exists('$(RepositoryEngineeringDir)InternalTools.props')" />
 </Project>
