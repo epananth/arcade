@@ -14,4 +14,19 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.ManifestTool.CrossPlatform" Version="2.1.3" GeneratePathProperty="true" />
   </ItemGroup>
+
+    <Target Name ="GenerateSbomForVSInsertion"
+   BeforeTargets="AfterPack">
+  <MakeDir Directories="$(ArtifactsDir)\sbom"/>
+    <!---
+    <ItemGroup>
+      <BuildDropPath="%(_StubDirs.Identity)" />
+      <ManifestDir="$(ArtifactsDir)\sbom" />
+      <ManifestToolPath="$(PkgMicrosoft_ManifestTool_CrossPlatform)\Content\Microsoft.ManifestTool.dll" />
+    </ItemGroup>
+    -->
+    <Exec Command = "dotnet $(PkgMicrosoft_ManifestTool_CrossPlatform)\Content\Microsoft.ManifestTool.dll BuildDropPath $(_StubDirs.Identity) ManifestDirPath $(ArtifactsDir)\sbom PackageName VsInsertion -V Debug"/>
+  <Message Text="Generating SBOM manifest" Importance="high"/>
+  </Target>
+
 </Project>
