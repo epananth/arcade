@@ -19,7 +19,7 @@
       <ManifestToolPath="$(PkgMicrosoft_ManifestTool_CrossPlatform)\Content\Microsoft.ManifestTool.dll" />
     </ItemGroup>
     -->
-  <Exec Command = "dotnet $(PkgMicrosoft_ManifestTool_CrossPlatform)\Content\Microsoft.ManifestTool.dll BuildDropPath %(_StubDirs.Identity) ManifestDirPath $(ArtifactsDir)\sbom PackageName VsInsertion -V Debug"/>
+  <Exec Command = "dotnet $env:NUGET_PACKAGES\microsoft.manifesttool.crossplatform\2.1.3\Content\Microsoft.ManifestTool.dll BuildDropPath %(_StubDirs.Identity) ManifestDirPath $(ArtifactsDir)\sbom PackageName VsInsertion -V Debug"/>
   <Message Text="Generating SBOM manifest" Importance="high"/>
   </Target>
 
