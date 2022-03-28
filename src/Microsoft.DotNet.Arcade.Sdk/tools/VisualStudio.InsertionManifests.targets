@@ -11,7 +11,7 @@
 -->
   <Target Name ="GenerateSbomForVSInsertion"
      BeforeTargets="AfterPack">
-     <MakeDir Directories="$(ArtifactsShippingPackagesDir)\sbom"/>
+     <MakeDir Directories="$(ArtifactsDir)\sbom"/>
     <!---
     <ItemGroup>
       <BuildDropPath="%(_StubDirs.Identity)" />
