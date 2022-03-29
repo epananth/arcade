@@ -11,7 +11,7 @@
 -->
   <Target Name ="GenerateSbomForVSInsertion"
      BeforeTargets="AfterPack">
-     <MakeDir Directories="$(BUILD_SOURCESDIRECTORY)\sbom"/>
+     <MakeDir Directories="$(BUILD_ARTIFACTSTAGINGDIRECTORY)\sbom"/>
     <!---
     <ItemGroup>
       <BuildDropPath="%(_StubDirs.Identity)" />
@@ -19,7 +19,7 @@
       <ManifestToolPath="$(PkgMicrosoft_ManifestTool_CrossPlatform)\Content\Microsoft.ManifestTool.dll" />
     </ItemGroup>
     -->
-  <Exec Command = "$(DotNetTool) $(NUGET_PACKAGES)microsoft.manifesttool.crossplatform\2.1.3\Content\Microsoft.ManifestTool.dll generate -b $(ArtifactsDir) -m $(BUILD_SOURCESDIRECTORY)\sbom -pn VsInsertion -V Verbose"/>
+  <Exec Command = "$(DotNetTool) $(NUGET_PACKAGES)microsoft.manifesttool.crossplatform\2.1.3\Content\Microsoft.ManifestTool.dll generate -b $(ArtifactsDir) -m $(BUILD_ARTIFACTSTAGINGDIRECTORY)\sbom -pn VsInsertion -V Verbose"/>
   <Message Text="Generating SBOM manifest" Importance="high"/>
   </Target>
 
