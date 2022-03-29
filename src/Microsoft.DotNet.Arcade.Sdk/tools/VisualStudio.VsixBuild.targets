@@ -136,8 +136,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <_FinalizeInsertionVsixFilesInputs Include="$()$(TargetVsixContainerName)" />
-      <_FinalizeInsertionVsixFilesInputs Include="$()$(_JsonFileName)" />
+      <_FinalizeInsertionVsixFilesInputs Include="$(VisualStudioSetupOutputPath)$(TargetVsixContainerName)" />
+      <_FinalizeInsertionVsixFilesInputs Include="$(VisualStudioSetupOutputPath)$(_JsonFileName)" />
 
       <_FinalizeInsertionVsixFilesOutputs Include="$(VisualStudioSetupInsertionPath)$(TargetVsixContainerName)" />
       <_FinalizeInsertionVsixFilesOutputs Include="$(VisualStudioSetupInsertionPath)$(_JsonFileName)" />
