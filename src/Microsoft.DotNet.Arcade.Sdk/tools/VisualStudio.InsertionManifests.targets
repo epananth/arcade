@@ -15,7 +15,7 @@
      <MakeDir Directories="$(ArtifactsDir)Vsix\others"/>
 
      <Unzip
-      SourceFiles="$(ArtifactsDir)\VSSetup\$(Configuration)\Insertion\*.vsix"
+      SourceFiles="$(ArtifactsDir)VSSetup\$(Configuration)\Insertion\*.vsix"
       DestinationFolder="$(ArtifactsDir)Vsix\Unpacked"
       OverwriteReadOnlyFiles="true"/>
 
