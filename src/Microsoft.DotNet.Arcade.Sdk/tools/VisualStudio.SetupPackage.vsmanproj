@@ -37,8 +37,9 @@
 
   <ItemGroup>
     <_PackageStubFiles Include="$(ComponentIntermediateOutputPath)*.stub"/>
-    <MergeManifest Include="@(_PackageStubFiles->'$(SetupOutputPath)%(Filename).json')"/>
-    <!-- SBOM File location and SBOM file destination has to be added here-->
+    <MergeManifest Include="@(_PackageStubFiles->'$(SetupOutputPath)%(Filename).json')"
+      SBOMFileLocation="$(ArtifactsDir)sbom\_manifest\spdx_2.2\manifest.spdx.json"
+      SBOMFileDestPath="..\src\ExampleProject\bin\$(Configuration)\net472" />
   </ItemGroup>
 
   <Import Project="$(SwixBuildPath)build\MicroBuild.Plugins.*.targets" />
