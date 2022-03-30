@@ -42,7 +42,7 @@
       SBOMFileDestPath="..\src\ExampleProject\bin\$(Configuration)\net472" />
   </ItemGroup>
 
-  <Import Project="$(SwixBuildPath)build\MicroBuild.Plugins.*.targets" />
+  <Import Project="$(SwixBuildPath)build\Microsoft.VisualStudio.*.targets" />
 
   <Target Name="_BuildManifest" DependsOnTargets="_SetManifestBuildVersion;GenerateSetupManifest" />
   

@@ -10,7 +10,7 @@
 -->
   <Target Name ="GenerateSbomForVSInsertion"
      BeforeTargets="AfterPack">
-
+    <Message Text="Generating SBOM manifest" Importance="high"/>
     <ItemGroup>
      <VsixFile Include="$(ArtifactsDir)VSSetup\$(Configuration)\Insertion\*.vsix"></VsixFile>
     </ItemGroup>
@@ -26,7 +26,7 @@
       OverwriteReadOnlyFiles="true"/>
 
   <Exec Command = "$(DotNetTool) $(NUGET_PACKAGES)microsoft.manifesttool.crossplatform\2.1.3\Content\Microsoft.ManifestTool.dll generate -b $(ArtifactsDir)Vsix -m $(ArtifactsDir)sbom -pn VsInsertion -V Verbose"/>
-  <Message Text="Generating SBOM manifest" Importance="high"/>
+  <Message Text="Completed generating SBOM manifest." Importance="high"/>
   </Target>
   <!---
     This target is invoked in a separate phase after all input VSIX files are signed.
