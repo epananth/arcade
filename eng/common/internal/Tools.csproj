@@ -23,9 +23,6 @@
     <RestoreSources>
       https://devdiv.pkgs.visualstudio.com/_packaging/dotnet-core-internal-tooling/nuget/v3/index.json;
     </RestoreSources>
-    <RestoreSources>
-      https://pkgs.dev.azure.com/dnceng/_packaging/MicroBuildToolset/nuget/v3/index.json;
-    </RestoreSources>
     <RestoreSources Condition="'$(UsingToolVisualStudioIbcTraining)' == 'true'">
       $(RestoreSources);
       https://devdiv.pkgs.visualstudio.com/_packaging/VS/nuget/v3/index.json;
