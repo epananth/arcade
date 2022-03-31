@@ -38,7 +38,7 @@
   <ItemGroup>
     <_PackageStubFiles Include="$(ComponentIntermediateOutputPath)*.stub"/>
     <MergeManifest Include="@(_PackageStubFiles->'$(SetupOutputPath)%(Filename).json')"
-      SBOMFileLocation="$(BUILD_SOURCESDIRECTORY)\sbom\spdx_2.2\manifest.spdx.json"/>
+      SBOMFileLocation="$(BUILD_SOURCESDIRECTORY)\artifacts\sbom\spdx_2.2\manifest.spdx.json"/>
   </ItemGroup>
 
   <Import Project="$(SwixBuildPath)build\Microsoft.VisualStudio.*.targets" />
