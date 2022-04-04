@@ -35,16 +35,19 @@
     <ManifestPublishUrl Condition="'$(VisualStudioDropName)' == ''">http://localhost/non-official-build%3B</ManifestPublishUrl>
   </PropertyGroup>
 
+  <Error Condition="Exists('$(BUILD_SOURCESDIRECTORY)\artifacts\sbom\spdx_2.2\manifest.spdx.json')" Text="Cannot file SBOM file, so not going to generate vs manifest!" /> 
+
   <ItemGroup>
     <_PackageStubFiles Include="$(ComponentIntermediateOutputPath)*.stub"/>
-    <MergeManifest Include="@(_PackageStubFiles->'$(SetupOutputPath)%(Filename).json')"
-      SBOMFileLocation="$(BUILD_SOURCESDIRECTORY)\artifacts\sbom\spdx_2.2\manifest.spdx.json"/>
+    <MergeManifest Include="@(_PackageStubFiles->'$(SetupOutputPath)%(Filename).json')">
+      <SBOMFileLocation>"$(BUILD_SOURCESDIRECTORY)\artifacts\sbom\spdx_2.2\manifest.spdx.json"</SBOMFileLocation>
+      <SBOMFileDestPath>"$(SetupOutputPath)"</SBOMFileDestPath>
+      </MergeManifest>
   </ItemGroup>
 
   <Import Project="$(SwixBuildPath)build\Microsoft.VisualStudio.*.targets" />
-
   <Target Name="_BuildManifest" DependsOnTargets="_SetManifestBuildVersion;GenerateSetupManifest" />
-  
+
   <!--
     Each stub file contains VSIX version of the respective VSIX file.
     We require that all VSIXes included in a single VS insertion component have the same version.
