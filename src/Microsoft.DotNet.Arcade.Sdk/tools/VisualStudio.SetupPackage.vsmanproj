@@ -54,7 +54,7 @@
   -->
   <Target Name="_SetManifestBuildVersion">
 
-    <Error Condition="Exists('$(BUILD_SOURCESDIRECTORY)\artifacts\sbom\spdx_2.2\manifest.spdx.json')" 
+    <Error Condition="!Exists('$(BUILD_SOURCESDIRECTORY)\artifacts\sbom\spdx_2.2\manifest.spdx.json')" 
       Text="Cannot file SBOM file, so not going to generate vs manifest!" />
 
     <ReadLinesFromFile File="%(_PackageStubFiles.Identity)">
