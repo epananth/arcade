@@ -43,7 +43,6 @@
       </MergeManifest>
   </ItemGroup>
 
-  <Import Project="$(SwixBuildPath)build\Microsoft.VisualStudio.*.targets" />
   <Import Project="$(SwixBuildPath)build\Microsoft.VisualStudioEng.MicroBuild.Plugins.SwixBuild.targets" />
   <Target Name="_BuildManifest" DependsOnTargets="_SetManifestBuildVersion;GenerateSetupManifest;AddSBOM" />
 
