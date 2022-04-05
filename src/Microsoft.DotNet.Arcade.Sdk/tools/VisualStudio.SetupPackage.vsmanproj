@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <Import Project="$(SwixBuildPath)build\Microsoft.VisualStudio*.targets" />
-  <Target Name="_BuildManifest" DependsOnTargets="_SetManifestBuildVersion;GenerateSetupManifest;AddSBOM;MoveSBOMFiles" />
+  <Target Name="_BuildManifest" DependsOnTargets="_SetManifestBuildVersion;GenerateSetupManifest;AddSBOM" />
 
   <!--
     Each stub file contains VSIX version of the respective VSIX file.
