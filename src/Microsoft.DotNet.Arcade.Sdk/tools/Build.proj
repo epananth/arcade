@@ -18,6 +18,7 @@
     DotNetSignType                  Specifies the signing type: 'real' (default), 'test'.
     DotNetRuntimeSourceFeed         Storage account to lookup for the .Net runtime files
     DotNetRuntimeSourceFeedKey      In case the storage account to fetch the .Net runtime files are private this should contain a SAS token.
+    SkipSymbolPublishingDryRun      Skips symbol publishing dry run, this will be used only for Upgrade assistance repo github issue: https://github.com/dotnet/arcade/issues/10016
 
     ContinuousIntegrationBuild      "true" when building on a CI server (PR build or official build)
     Restore                         "true" to restore toolset and solution
@@ -145,6 +146,7 @@
 
       <!-- Forward this property because we can't assume it will be available globally. -->
       <_RestoreToolsProps Include="DotNetPublishUsingPipelines=$(DotNetPublishUsingPipelines)"/>
+      <_RestoreToolsProps Include="SkipSymbolPublishingDryRun=$(SkipSymbolPublishingDryRun)"/>
     </ItemGroup>
 
     <!--
@@ -168,6 +170,7 @@
 
       <!-- Forward this property because we can't assume it will be available globally. -->
       <_PublishProps Include="DotNetPublishUsingPipelines=$(DotNetPublishUsingPipelines)"/>
+      <_PublishProps Include="SkipSymbolPublishingDryRun=$(SkipSymbolPublishingDryRun)" />
     </ItemGroup>
 
     <ItemGroup>
