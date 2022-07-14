@@ -12,6 +12,7 @@
       DotNetSymbolServerTokenSymWeb     Personal access token for SymWeb symbol server. Available from variable group DotNet-Symbol-Server-Pats.
       DotNetSymbolExpirationInDays      Symbol expiration time in days (defaults to 10 years).
       SkipPackageChecks                 Skips package safety checks.
+      SkipSymbolPublishingDryRun        Skips symbol publishing dry run, this will be used only for Upgrade assistance repo github issue: https://github.com/dotnet/arcade/issues/10016
   -->
 
   <Import Project="BuildStep.props" />
@@ -22,6 +23,9 @@
     <PublishToSourceBuildStorage>false</PublishToSourceBuildStorage>
     <PublishToSourceBuildStorage Condition="'$(DotNetOutputBlobFeedDir)' != ''">true</PublishToSourceBuildStorage>
     
+    <SkipSymbolPublishingDryRun>true</SkipSymbolPublishingDryRun>
+    <SkipSymbolPublishingDryRun Condition="'$(SkipSymbolPublishingDryRun)'!= 'true'">false</SkipSymbolPublishingDryRun>
+
     <!-- Globally set property. -->
     <IsStableBuild>false</IsStableBuild>
     <IsStableBuild Condition="'$(DotNetFinalVersionKind)' == 'release'">true</IsStableBuild>
@@ -208,7 +212,7 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(OfficialBuild)' != 'true'">
-      <DryRun>true</DryRun>
+      <DryRun>$(SkipSymbolPublishingDryRun)</DryRun>
       <DotNetSymbolServerTokenSymWeb>DryRunPTA</DotNetSymbolServerTokenSymWeb>
       <DotNetSymbolServerTokenMsdl>DryRunPTA</DotNetSymbolServerTokenMsdl>
     </PropertyGroup>
