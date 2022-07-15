@@ -22,9 +22,9 @@
   <PropertyGroup>
     <PublishToSourceBuildStorage>false</PublishToSourceBuildStorage>
     <PublishToSourceBuildStorage Condition="'$(DotNetOutputBlobFeedDir)' != ''">true</PublishToSourceBuildStorage>
-    
-    <SkipSymbolPublishingDryRun>true</SkipSymbolPublishingDryRun>
-    <SkipSymbolPublishingDryRun Condition="'$(SkipSymbolPublishingDryRun)'!= 'true'">false</SkipSymbolPublishingDryRun>
+
+    <SetDryRun Condition="'$(SkipSymbolPublishingDryRun)'== 'true'">false</SetDryRun>
+    <SetDryRun Condition="'$(SkipSymbolPublishingDryRun)'== ''">true</SetDryRun>
 
     <!-- Globally set property. -->
     <IsStableBuild>false</IsStableBuild>
@@ -212,7 +212,7 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(OfficialBuild)' != 'true'">
-      <DryRun>$(SkipSymbolPublishingDryRun)</DryRun>
+      <DryRun>$(SetDryRun)</DryRun>
       <DotNetSymbolServerTokenSymWeb>DryRunPTA</DotNetSymbolServerTokenSymWeb>
       <DotNetSymbolServerTokenMsdl>DryRunPTA</DotNetSymbolServerTokenMsdl>
     </PropertyGroup>
